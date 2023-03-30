@@ -70,13 +70,16 @@ describe("Category Unit Test", () => {
     data.forEach((item) => {
       const category = new Category(item.props, item.id);
       expect(category.id).toBeDefined();
-      expect(category.id).toBeInstanceOf(UniqueEntityId);
+      expect(category.uniqueEntityId).toBeInstanceOf(UniqueEntityId);
     });
   });
 
-  test("getter of name prop", () => {
+  test("getter and setter of name prop", () => {
     const category = new Category({ name: "Movie" });
     expect(category.name).toEqual("Movie");
+
+    category["name"] = "other name";
+    expect(category.name).toBe("other name");
   });
 
   test("getter and setter of description prop", () => {
@@ -115,5 +118,25 @@ describe("Category Unit Test", () => {
     let createdAt = new Date();
     category = new Category({ name: "Movie", createdAt });
     expect(category.createdAt).toBe(createdAt);
+  });
+
+  test("update name and description", () => {
+    const category = new Category({
+      name: "Movie",
+      description: "A good movie",
+    });
+    category.update("Other movie", "A bad movie");
+    expect(category.name).toBe("Other movie");
+    expect(category.description).toBe("A bad movie");
+  });
+
+  test("change isActive status", () => {
+    const category = new Category({
+      name: "Movie",
+    });
+    category.deactivate();
+    expect(category.isActive).toBe(false);
+    category.activate();
+    expect(category.isActive).toBe(true);
   });
 });
