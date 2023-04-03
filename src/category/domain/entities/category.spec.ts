@@ -3,11 +3,16 @@ import { omit } from "lodash";
 import UniqueEntityId from "../../../@seedwork/domain/value-objects/unique-entity-id.vo";
 
 describe("Category Unit Test", () => {
+  beforeEach(() => {
+    Category.validate = jest.fn();
+  });
+
   test("constructor of category", () => {
     let category = new Category({
       name: "Movie",
     });
     let props = omit(category.props, "createdAt");
+    expect(Category.validate).toHaveBeenCalled();
     expect(props).toStrictEqual({
       name: "Movie",
       description: null,
@@ -126,6 +131,7 @@ describe("Category Unit Test", () => {
       description: "A good movie",
     });
     category.update("Other movie", "A bad movie");
+    expect(Category.validate).toHaveBeenCalledTimes(2);
     expect(category.name).toBe("Other movie");
     expect(category.description).toBe("A bad movie");
   });
