@@ -1,4 +1,7 @@
-import ValidationError from "../../../@seedwork/errors/validation-error";
+import {
+  EntityValidationError,
+  ValidationError,
+} from "../../../@seedwork/domain/errors/validation-error";
 import { Category } from "./category";
 
 describe("Category Integration Tests", () => {
@@ -6,35 +9,50 @@ describe("Category Integration Tests", () => {
     it("should be an invalid category using name property", () => {
       expect(() => {
         new Category({ name: null });
-      }).toThrow(new ValidationError("The name is required"));
+      }).containsErrorMessages({
+        name: [
+          "name should not be empty",
+          "name must be a string",
+          "name must be shorter than or equal to 255 characters",
+        ],
+      });
 
       expect(() => {
-        new Category({ name: null });
-      }).toThrow(new ValidationError("The name is required"));
+        new Category({ name: "" });
+      }).containsErrorMessages({
+        name: ["name should not be empty"],
+      });
 
       expect(() => {
         new Category({ name: 5 as any });
-      }).toThrow(new ValidationError("The name must be a string"));
+      }).containsErrorMessages({
+        name: [
+          "name must be a string",
+          "name must be shorter than or equal to 255 characters",
+        ],
+      });
 
       expect(() => {
-        new Category({ name: "a".repeat(256) });
-      }).toThrow(
-        new ValidationError(
-          "The name must be less or equal than 255 characters"
-        )
-      );
+        new Category({ name: "t".repeat(256) });
+      }).containsErrorMessages({
+        name: ["name must be shorter than or equal to 255 characters"],
+      });
     });
 
     it("should be an invalid category using description property", () => {
       expect(() => {
-        new Category({ name: "Movie", description: 5 as any });
-      }).toThrow(new ValidationError("The description must be a string"));
+        new Category({ description: 5 } as any);
+      }).containsErrorMessages({
+        description: ["description must be a string"],
+      });
     });
 
     it("should be an invalid category using isActive property", () => {
       expect(() => {
-        new Category({ name: "Movie", isActive: "" as any });
-      }).toThrow(new ValidationError("The isActive must be a boolean"));
+        new Category({ isActive: 5 } as any);
+      }).containsErrorMessages({
+        isActive: ["isActive must be a boolean value"],
+      });
     });
 
     it("should be a valid category", () => {
@@ -68,30 +86,43 @@ describe("Category Integration Tests", () => {
       const category = new Category({ name: "Movie" });
       expect(() => {
         category.update(null, null);
-      }).toThrow(new ValidationError("The name is required"));
+      }).containsErrorMessages({
+        name: [
+          "name should not be empty",
+          "name must be a string",
+          "name must be shorter than or equal to 255 characters",
+        ],
+      });
 
       expect(() => {
         category.update("", null);
-      }).toThrow(new ValidationError("The name is required"));
+      }).containsErrorMessages({
+        name: ["name should not be empty"],
+      });
 
       expect(() => {
         category.update(5 as any, null);
-      }).toThrow(new ValidationError("The name must be a string"));
+      }).containsErrorMessages({
+        name: [
+          "name must be a string",
+          "name must be shorter than or equal to 255 characters",
+        ],
+      });
 
       expect(() => {
         category.update("a".repeat(256), null);
-      }).toThrow(
-        new ValidationError(
-          "The name must be less or equal than 255 characters"
-        )
-      );
+      }).containsErrorMessages({
+        name: ["name must be shorter than or equal to 255 characters"],
+      });
     });
 
     it("should be an invalid category using description property", () => {
       const category = new Category({ name: "Movie" });
       expect(() => {
-        category.update("Movie", 5 as any);
-      }).toThrow(new ValidationError("The description must be a string"));
+        category.update(null, 5 as any);
+      }).containsErrorMessages({
+        description: ["description must be a string"],
+      });
     });
 
     it("should be a valid category", () => {
