@@ -4,7 +4,7 @@ import UniqueEntityId from "../value-objects/unique-entity-id.vo";
 import {
   RepositoryInterface,
   SearchableRepositoryInterface,
-} from "./repository-contract";
+} from "./repository-contracts";
 
 export abstract class InMemoryRepository<E extends Entity>
   implements RepositoryInterface<E>
